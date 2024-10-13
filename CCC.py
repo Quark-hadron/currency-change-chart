@@ -1,15 +1,18 @@
-import requests as rq
-from bs4 import BeautifulSoup as BS
 import time
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import numpy as np
-from matplotlib.ticker import FixedFormatter,LinearLocator,MultipleLocator,FormatStrFormatter
-import pandas as pd
 import tkinter as tk
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import requests as rq
+from bs4 import BeautifulSoup as BS
+from matplotlib.ticker import FixedFormatter, LinearLocator, MultipleLocator
+
 rq.get('https://google.com', verify=False)
+
 user_text = int(input("Enter please interval in second: ")) #пользовательские настройки
+
+
 
 #запрос api
 def make_api_request():
@@ -19,11 +22,12 @@ def make_api_request():
     url_gbr = 'https://ru.investing.com/currencies/gbp-rub'
 
     text_usd = 'text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]'
-    text_usd_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-negative-main'
+    text_usd_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-positive-main'
     text_eur = 'text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]'
-    text_eur_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-negative-main'
+    text_eur_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-positive-main'
     text_gbr = 'text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]'
-    text_gbr_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-negative-main'
+    text_gbr_growth = 'flex items-center gap-2 text-base/6 font-bold md:text-xl/7 rtl:force-ltr text-positive-main'
+
 
     #отправка запроса валюты
     response_usd = rq.get(url_usd)
@@ -117,9 +121,9 @@ def make_api_request():
     x3 = np.array([3])
     y3 = np.array([GBR_y])
 
-    ax.bar(x1,y1,label='USD',width=0.4)
-    ax.bar(x2,y2,label='EUR',width=0.4)
-    ax.bar(x3, y3, label='GBP',width=0.4)
+    ax.bar(x1,y1,label='USD',width=0.4,linewidth=0.5,edgecolor='r',bottom=10,yerr=2)
+    ax.bar(x2,y2,label='EUR',width=0.4,linewidth=0.5,edgecolor='r',bottom=10,yerr=2)
+    ax.bar(x3, y3, label='GBP',width=0.4,linewidth=0.5,edgecolor='r',bottom=10,yerr=2)
 
     ax.minorticks_on()
 
@@ -127,7 +131,7 @@ def make_api_request():
     ax.xaxis.set_major_formatter(FixedFormatter([USD_y_growth,EUR_y_growth,GBR_y_growth]))
     ax.yaxis.set_major_locator(MultipleLocator(base=10))
     ax.yaxis.set_minor_locator(MultipleLocator(base=10))
-    plt.ylabel('₽')
+    ax.set_ylim(10,200)
 
     fig.suptitle('It is monitoring USD/EUR/GBP')
 
@@ -139,10 +143,17 @@ def make_api_request():
     #вызвать окно tkinter
     root.mainloop()
 
-while True:
+user = True
+while user:
 
-    make_api_request()
-
+    print('>>Close windows for quit from program<<')
+    make_api_request() # получение api
     time.sleep(user_text)  # Пауза-интервал
-    print('>>Close windows for update base date<<')
 
+    user_data = str(input('Enter please stop if want closed program\n'
+                          'Press enter if want continue: ')).lower() #программа завершения работы с графиком
+    #условие завершения программы
+    if user_data == 'stop':
+        user = False
+    else:
+        user = True
